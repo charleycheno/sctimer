@@ -1,6 +1,8 @@
 var time = document.getElementById("time");
 
-time.textContent = "0.00";
+var decimals = 3;
+
+time.textContent = (0).toFixed(decimals);
 
 var downDate;
 
@@ -15,12 +17,36 @@ var result;
 
 var updateInterval;
 
+function returnTime(now) {
+    var n = (now - upDate) / 1000;
+    
+    var hours = Math.floor(n / 3600);
+    n %= 3600;
+    var minutes = Math.floor(n / 60);
+    n %= 60;
+    var seconds = Math.floor(n);
+    n %= 1;
+    var miliseconds = n.toFixed(decimals).slice(2);
+    
+    if((hours > 0 || minutes > 0) && seconds < 10) {
+        seconds = `0${seconds}`;
+    }
+    
+    if(hours > 0) {
+        return `${hours}:${minutes}:${seconds}.${miliseconds}`;
+    } else if(minutes > 0) {
+        return `${minutes}:${seconds}.${miliseconds}`;
+    } else {
+        return `${seconds}.${miliseconds}`;
+    }
+}
+
 function updateTime() {
-    time.textContent = Math.floor((new Date().getTime() - upDate) / 1000);
+    time.textContent = returnTime(new Date().getTime());
 }
 
 document.body.onkeydown = function(e) {
-  if (e.key == " " || e.code == "Space" || e.keyCode == 32) {
+  if (e.key == " " || e.code == "Space") {
 
     if(waiting != true && ready != true && solving != true && stopping != true) {
         waiting = true;
@@ -45,14 +71,14 @@ document.body.onkeydown = function(e) {
         // stop timer
         result = (new Date().getTime() - upDate) / 1000;
         clearInterval(updateInterval);
-        time.textContent = result;
+        time.textContent = returnTime(new Date().getTime());
         upDate = null;
     }
   }
 }
 
 document.body.onkeyup = function(e) {
-  if (e.key == " " || e.code == "Space" || e.keyCode == 32) {
+  if (e.key == " " || e.code == "Space") {
     time.style.color = "#000000";
 
     if(waiting == true) {
